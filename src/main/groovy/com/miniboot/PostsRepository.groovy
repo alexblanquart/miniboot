@@ -11,4 +11,6 @@ interface PostsRepository extends JpaRepository<Post, Long> {
 	List<Post> findAllByCategory(String category, Pageable pageable)
 	
 	List<Post> findAllByCategory(String category, Sort sort)
+	
+	List<Post> findAllByTagsContaining(String tag, Sort sort)
 }

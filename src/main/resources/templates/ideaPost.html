@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html>
-{{> head.html}}
+{{> head}}
 
 <body>
-{{> navigation.html}}
-<div class="banner banner-{{category}}"></div>
+{{> navigation}}
+<div class="banner banner-{{post.category}}"></div>
 
 <div class="container">
 	<div class="row">
 		<div class="col-sm-9">
 			<div class="row">
 			    <div class="col-sm-12">
-			   		<h1 class="title">{{title}}</h1>
+			   		<h1 class="title">{{post.title}}</h1>
 			        <ul class="list-inline">
-			            <li><p class="text-muted"><em>{{date}}</em></p></li>
-			            <li><p>{{#tags}}{{> tag.html}}{{/tags}}</p></li>
+			            <li><p class="text-muted"><em>{{post.date}}</em></p></li>
+			            <li><p>{{#post.tags}}{{> tag }}{{/post.tags}}</p></li>
 			        </ul>
 			    </div>
 			</div>
@@ -33,14 +33,14 @@
 			</div>
 			<div class="row">
 				<div class="col-sm-12">
-					<p>{{> share.html}}</p>
+					<p><strong>Partager</strong> <a href="https://twitter.com/intent/tweet?url=window.location&text={{post.title}}" target="_blank" class="btn btn-twitter"><i class="fa fa-twitter"></i> Twitter</a> <a href="https://www.facebook.com/sharer/sharer.php?u=window.location" target="_blank" class="btn btn-facebook"><i class="fa fa-facebook"></i> Facebook</a></p>
 				</div>
 			</div>
 		</div>
 		<div class="col-sm-3">
 			<div class="panel panel-default">
   				<div class="panel-body">
-					{{> me.html}}
+					{{> me}}
 				</div>
 			</div>
 			<div class="panel panel-default">
@@ -56,22 +56,22 @@
   				<div class="panel-body">
 					<p><strong>Articles récents</strong></p>
 					{{#recentPosts}}
-        				<p><a href="{{url}}">{{title}}</a></p>
+        				<p><a href="/posts/{{id}}">{{title}}</a></p>
     				{{/recentPosts}}
 				</div>
 			</div>
 			<div class="panel panel-default">
   				<div class="panel-body">
 	  				<p><strong>Mots clés</strong></p>
-	  				<p>{{#allTags}}{{> tag.html}}{{/allTags}}</p>
+	  				<p>{{#allTags}}{{> tag}}{{/allTags}}</p>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-{{> disqus.html}}
-{{> footer.html}}
-{{> scripts.html}}
+{{> disqus}}
+{{> footer}}
+{{> scripts}}
 
 </body>
 </html>

@@ -13,14 +13,20 @@ import org.springframework.web.bind.annotation.RequestMapping
 @Controller
 class PagesController {
 	
-	@Autowired
 	PostsRepository postsRepository
-	
-	@Autowired
-	TagsRepository tagsRepository
-	
-	@Autowired
 	ResourceLoader resourceLoader
+	PegDownProcessor pdp
+	File contentFolder
+	File materialFolder
+	
+	@Autowired
+	PagesController(PostsRepository postsRepository, ResourceLoader resourceLoader){
+		this.postsRepository = postsRepository
+		this.resourceLoader = resourceLoader
+		this.pdp = new PegDownProcessor()
+		this.contentFolder = resourceLoader.getResource("file:src/main/init/posts/content").file
+		this.materialFolder = resourceLoader.getResource("file:src/main/init/posts/material").file
+	}
 	
 	def recentBlogPosts(){
 		postsRepository.findAllByCategory("blog", new PageRequest(0, 10, Direction.DESC, "localDate"))
@@ -30,18 +36,26 @@ class PagesController {
 		postsRepository.findAll(new PageRequest(0, 4, Direction.DESC, "localDate"))
 	}
 	
-	def allBlogPosts(){
-		postsRepository.findAllByCategory("blog", new Sort(Direction.DESC, "localDate"))
+	def allCategoryPosts(String category){
+		postsRepository.findAllByCategory(category, new Sort(Direction.DESC, "localDate"))
+	}
+	
+	def allTagPosts(String tag){
+		postsRepository.findAllByTagsContaining(tag, new Sort(Direction.DESC, "localDate"))
 	}
 	
 	def allTags(){
-		tagsRepository.findAll()
+		def allTagsList = []
+		postsRepository.findAll().collect{ it.tags.each{allTagsList << it} }
+		def allTagsSet = allTagsList as Set 
 	}
 	
 	def content(Post post){
-		def contentFolder = resourceLoader.getResource("file:src/main/init/posts/content")
-		def pdp = new PegDownProcessor()
-        pdp.markdownToHtml(new File(contentFolder.file, post.filename+".md").text)
+        pdp.markdownToHtml(new File(contentFolder, post.filename+".md").text)
+	}
+	
+	def material(Post post){
+		pdp.markdownToHtml(new File(materialFolder, post.filename+".md").text)
 	}
 	
 	@RequestMapping("/")
@@ -56,20 +70,43 @@ class PagesController {
 		model.put("content", content(post))
 		model.put("recentPosts", recentPosts())
 		model.put("allTags", allTags())
-		"post"
+		if (post.category == "idea"){
+			model.put("material", material(post))
+		}
+		post.category + "Post"
 	}
 	
-	@RequestMapping("/blog")
-	String blog(Map<String, Object> model){
-		def posts = allBlogPosts()
+	@RequestMapping("/posts/category/{category}")
+	String category(Map<String, Object> model, @PathVariable String category){
+		def posts = allCategoryPosts(category)
 		posts.each { post ->
 			def content = content(post)
 			// remove any html tags for summary
 	        post.summary = content.replaceAll("<(.|\n)*?>", "") 
 	        post.summary = post.summary[0..Math.min(100, post.summary.length()-1)]
 		}
-		model.put("category", "blog")
+		model.put("category", category)
 		model.put("posts", posts)
-		"blog"
+		"posts"
 	}
+	
+	@RequestMapping("/posts/tag/{tag}")
+	String tag(Map<String, Object> model, @PathVariable String tag){
+		def posts = allTagPosts(tag)
+		posts.each { post ->
+			def content = content(post)
+			// remove any html tags for summary
+			post.summary = content.replaceAll("<(.|\n)*?>", "") 
+			post.summary = post.summary[0..Math.min(100, post.summary.length()-1)]
+		}
+		model.put("category", "blog") // TODO not necessarily
+		model.put("posts", posts)
+		"posts"
+	}
+	
+	@RequestMapping("/about")
+	String about(){
+		"about"
+	}
+	
 }
