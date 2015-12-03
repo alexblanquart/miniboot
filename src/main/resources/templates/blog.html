@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-{{> head.html}}
+{{> head }}
 
 <body>
-{{> navigation.html}}
+{{> navigation }}
 <div class="banner banner-{{category}}"></div>
 
 <div class="container">
@@ -16,12 +16,12 @@
 			{{#posts}}
 		        <div class="grid-item col-sm-4">
 		        	<div class="thumbnail text-center">
-		            	<a href="{{url}}"><img src="/images/posts/{{image}}" class="img-responsive"></a>
+		            	<a href="/posts/{{id}}"><img src="/images/posts/{{image}}" class="img-responsive"></a>
 		            	<div class="caption">
 		              		<h2 class="title">{{title}}</h2>
 		              		<p>{{summary}}</p>
 		              		<p class="text-muted"><em>{{date}}</em></p>
-		              		<p><a href="{{url}}" class="btn btn-button-name btn-sm" role="button">Lire la suite</a></p>
+		              		<p><a href="/posts/{{id}}" class="btn btn-button-name btn-sm" role="button">Lire la suite</a></p>
 		            	</div>
 		          	</div>
 		        </div>
@@ -31,8 +31,8 @@
 	</div>
 </div>
 
-{{> footer.html}}
-{{> scripts.html}}
+{{> footer }}
+{{> scripts }}
 
 </body>
 </html>

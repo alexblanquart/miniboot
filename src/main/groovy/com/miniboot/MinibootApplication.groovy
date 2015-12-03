@@ -1,6 +1,8 @@
 package com.miniboot
 
-import java.io.IOException;
+import java.io.IOException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter;
 import java.util.List
 
 import org.springframework.boot.CommandLineRunner
@@ -11,7 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper
 
 @SpringBootApplication
 class MinibootApplication {
@@ -27,6 +29,7 @@ class MinibootApplication {
         	metaFolder.eachFile { file ->
         		def post = mapper.readValue(file, Post.class)
         		post.filename = file.name.split("\\.")[0]
+        		post.localDate = LocalDate.parse(post.date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
         		if (post.image){ // TODO should make all post have an image        			
         			repository.save(post)
         		}

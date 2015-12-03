@@ -23,11 +23,15 @@ class PagesController {
 	ResourceLoader resourceLoader
 	
 	def recentBlogPosts(){
-		postsRepository.findAllByCategory("blog", new PageRequest(0, 10, Direction.DESC, "date"))
+		postsRepository.findAllByCategory("blog", new PageRequest(0, 10, Direction.DESC, "localDate"))
 	}
 	
 	def recentPosts(){
-		postsRepository.findAll(new PageRequest(0, 4, Direction.DESC, "date"))
+		postsRepository.findAll(new PageRequest(0, 4, Direction.DESC, "localDate"))
+	}
+	
+	def allBlogPosts(){
+		postsRepository.findAllByCategory("blog", new Sort(Direction.DESC, "localDate"))
 	}
 	
 	def allTags(){
@@ -41,17 +45,31 @@ class PagesController {
 	}
 	
 	@RequestMapping("/")
-	public String index(Map<String, Object> model) {
+	String index(Map<String, Object> model) {
 		model.put("recentBlog", recentBlogPosts())
 		"index"
 	}
 	
 	@RequestMapping("/posts/{id}")
-	public String post(Map<String, Object> model, @PathVariable("id") Post post){
+	String post(Map<String, Object> model, @PathVariable("id") Post post){
 		model.put("post", post)
 		model.put("content", content(post))
 		model.put("recentPosts", recentPosts())
 		model.put("allTags", allTags())
 		"post"
+	}
+	
+	@RequestMapping("/blog")
+	String blog(Map<String, Object> model){
+		def posts = allBlogPosts()
+		posts.each { post ->
+			def content = content(post)
+			// remove any html tags for summary
+	        post.summary = content.replaceAll("<(.|\n)*?>", "") 
+	        post.summary = post.summary[0..Math.min(100, post.summary.length()-1)]
+		}
+		model.put("category", "blog")
+		model.put("posts", posts)
+		"blog"
 	}
 }
